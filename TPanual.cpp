@@ -40,7 +40,7 @@ struct nodo2{
 };
 
 void cargaEspecialidad(especialidad especialidades[]);
-int menu(int accion);
+int menu();
 void altaNuevoPaciente(FILE * &Pacientes);
 void altaNuevoMedico(FILE * &Medicos);
 
@@ -54,14 +54,14 @@ nodo2 *turnos2024=NULL;//lista//
 int accion=0;
 
 while (accion!=8){
-accion = menu(accion);
-if (accion=1)
+accion = menu();
+if (accion==1)
 {
 altaNuevoPaciente(Pacientes);}
-if(accion=2){
+if(accion==2){
 
 }
-if (accion=3)
+if (accion==3)
 {
     altaNuevoMedico(Medicos);
 }
@@ -90,7 +90,8 @@ fseek(Pacientes,0,SEEK_END);
 fwrite(&nuevo,sizeof(paciente),1,Pacientes);
 fclose(Pacientes);
 }}
-int menu(int accion){
+int menu(){
+    int accion;
 cout<< "Por favor indique un numero del 1 al 8 indicando la que accion desea realizar: "<<endl;
 cout<<"1. Alta de nuevo paciente"<<endl;
 cout<<"2. Alta de nuevo turno"<<endl;
@@ -102,8 +103,9 @@ cout<<"7. Listado de cancelaciones"<<endl;
 cout<<"8. Cerrar menu"<<endl;
 cin>>accion;
 if (accion>8||accion<1){
-    cout<<"numero invalido, por favor ingrese un numero valido: ";}
-    return accion;
+    cout<<"numero invalido, por favor ingrese un numero valido: ";
+    }
+  return accion;
 }
 void cargaEspecialidad(especialidad especialidades[]){
 int i;
