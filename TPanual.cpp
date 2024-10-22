@@ -1,5 +1,6 @@
 #include <iostream>
 #include<stdio.h>
+#include<cstring>
 using namespace std;
 
 struct paciente{
@@ -11,7 +12,7 @@ struct medico
 {
     int idMed;
     char nombre[25+1],apellido[25+1];
-    int matricula, idEspecialidad,diasAtencion,horario,tiempoConsulta;
+    int matricula, idEspecialidad,diasAtencion[7],horainicio,horafin,tiempoConsulta;
 };
 struct especialidad{
     int id;
@@ -28,6 +29,7 @@ struct nodo{
     turno info;
 };
 
+void cargaEspecialidad(especialidad especialidades[]);
 int menu(int accion);
 void altaNuevoPaciente(FILE * &Pacientes);
 
@@ -35,6 +37,7 @@ int main(){
 FILE *Pacientes;
 FILE *Medicos;
 especialidad especialidades[20];
+cargaEspecialidad(especialidades);
 nodo *lista=NULL;
 int accion=0;
 
@@ -42,11 +45,10 @@ while (accion!=8){
 accion = menu(accion);
 if (accion=1)
 {
-altaNuevoPaciente(Pacientes);
-}
+altaNuevoPaciente(Pacientes);}
+
 
 }
-
     return 0;
 }
 
@@ -65,7 +67,7 @@ cout<<endl<<"Escriba el nombre del paciente: ";cin>>nuevo.nombre;
 cout<<endl<<"Escriba el apellido del paciente: ";cin>>nuevo.apellido;
 cout<<endl<<"Escriba el dni del paciente: ";cin>>nuevo.dni;
 cout<<endl<<"Escriba la edad del paciente: ";cin>>nuevo.edad;
-cout<<endl<<"Escriba el numero de telefono del paciente: ";cin>> nuevo.telefono;
+cout<<endl<<"Escriba el numero de telefono del paciente: ";cin>> nuevo.telefono;cout<<endl;
 fseek(Pacientes,0,SEEK_END);
 fwrite(&nuevo,sizeof(paciente),1,Pacientes);
 fclose(Pacientes);
@@ -91,24 +93,76 @@ for (i=0; i < 20; i++)
 {
     especialidades[i].id=i+1;
 }
-especialidades[0].descripcion[]= "Cardiologia";
-especialidades[1].descripcion[]="Dermatologia";
-especialidades[2].descripcion[]="Ginecologia";
-especialidades[3].descripcion[]="Pediatria";
-especialidades[4].descripcion[]="Neurologia";
-especialidades[5].descripcion[]="Oftalmologia";
-especialidades[6].descripcion[]="Oncologia";
-especialidades[7].descripcion[]="Ortopedia";
-especialidades[8].descripcion[]="Endocrinologia";
-especialidades[9].descripcion[]="Neumologia";
-especialidades[10].descripcion[]="Psiquiatria";
-especialidades[11].descripcion[]="Otorrinolaringologia";
-especialidades[12].descripcion[]="Gastroenterologia";
-especialidades[13].descripcion[]="Urologia";
-especialidades[14].descripcion[]="Nefrologia";
-especialidades[15].descripcion[]="Reumatologia";
-especialidades[16].descripcion[]="Cirugia General";
-especialidades[17].descripcion[]="Medicina Interna";
-especialidades[18].descripcion[]= "Traumatologia";
-especialidades[19].descripcion[]= "Infectologia";
+strcpy(especialidades[0].descripcion, "Cardiologia");
+    strcpy(especialidades[1].descripcion, "Dermatologia");
+    strcpy(especialidades[2].descripcion, "Ginecologia");
+    strcpy(especialidades[3].descripcion, "Pediatria");
+    strcpy(especialidades[4].descripcion, "Neurologia");
+    strcpy(especialidades[5].descripcion, "Oftalmologia");
+    strcpy(especialidades[6].descripcion, "Oncologia");
+    strcpy(especialidades[7].descripcion, "Ortopedia");
+    strcpy(especialidades[8].descripcion, "Endocrinologia");
+    strcpy(especialidades[9].descripcion, "Neumologia");
+    strcpy(especialidades[10].descripcion, "Psiquiatria");
+    strcpy(especialidades[11].descripcion, "Otorrinolaringologia");
+    strcpy(especialidades[12].descripcion, "Gastroenterologia");
+    strcpy(especialidades[13].descripcion, "Urologia");
+    strcpy(especialidades[14].descripcion, "Nefrologia");
+    strcpy(especialidades[15].descripcion, "Reumatologia");
+    strcpy(especialidades[16].descripcion, "Cirugia General");
+    strcpy(especialidades[17].descripcion, "Medicina Interna");
+    strcpy(especialidades[18].descripcion, "Traumatologia");
+    strcpy(especialidades[19].descripcion, "Infectologia");
 }
+void altaNuevoMedico(FILE * &Medicos){
+    int diasdeconsultas;
+    int i;
+medico nuevo;
+    Medicos=fopen("MEDICOS.BIN","rb+");
+    if (Medicos==NULL)
+{
+ cout << "No se pudo abrir el archivo para lectura." << endl;
+}else{fseek(Medicos,-sizeof(medico),SEEK_END);
+fread(&nuevo,sizeof(medico),1,Medicos);
+nuevo.idMed++;
+for (int i = 0; i < 7; i++) {
+        nuevo.diasAtencion[i] = 0;}
+cout<<"Ingrese nombre del medico: ";cin>>nuevo.nombre;
+cout<<endl<<"Ingrese apellido del medico: ";cin>>nuevo.apellido;
+cout<<endl<<"Ingrese numero de matricula del medico: ";cin>>nuevo.matricula;
+cout<<endl<<"ingrese id de especialidad: ";cin>>nuevo.idEspecialidad;
+    while (nuevo.idEspecialidad>20||nuevo.idEspecialidad<1)
+    {
+       cout<<endl<<"Id de especialidad invalido, por favor ingrese un id valido, entre 1 y 20: ";
+       cin>>nuevo.idEspecialidad;
+    }
+cout<<endl<<"ingrese rango horario laboral: Inicia a las: ";cin>>nuevo.horainicio;
+while (nuevo.horainicio<0||nuevo.horainicio>23)
+{
+    cout<<endl<<"Hora de inicio invalida, por favor ingrese una hora valida: ";cin>>nuevo.horainicio;
+}
+cout<<endl<<"Finaliza a las: ";cin>>nuevo.horafin;
+while (nuevo.horafin<0||nuevo.horafin>23||nuevo.horafin==nuevo.horainicio)
+{
+    cout<<endl<<"Hora de finalizacion invalida, por favor ingrese una hora valida: ";cin>>nuevo.horainicio;
+}
+cout<<endl<<"ingrese tiempo de consultas (en minutos): ";cin>>nuevo.tiempoConsulta;
+cout<<endl<<"ingrese la cantidad de dias que atiende el medico: ";cin>>diasdeconsultas;
+while (diasdeconsultas>7||diasdeconsultas<1)
+{
+    cout<<endl<<"Cantidad de dias invalidos, por favor ingrese una cantidad valida: ";cin>>diasdeconsultas;
+}
+for ( i = 0; i < diasdeconsultas; i++)
+{
+    cout<<endl<<"ingrese el dia numero "<<i+1<<" que trabaja en la semana(comenzando desde el domingo como 1 y el sabado como 7): ";
+    cin>>nuevo.diasAtencion[i];
+    while (nuevo.diasAtencion[i]>7||nuevo.diasAtencion[i]<1)
+    {
+       cout<<endl<<"Dia invalido por favor ingrese un dia entre 1 y 7 :";
+       cin>>nuevo.diasAtencion[i];
+    }}
+    fseek(Medicos,0,SEEK_END);
+    fwrite(&nuevo,sizeof(medico),1,Medicos);
+    fclose(Medicos);
+    }
+    }
