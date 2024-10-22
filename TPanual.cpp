@@ -39,7 +39,7 @@ nodo *lista=NULL;
 int accion=0;
 
 while (accion!=8){
-menu(accion);
+accion = menu(accion);
 if (accion=1)
 {
 altaNuevoPaciente(Pacientes);
