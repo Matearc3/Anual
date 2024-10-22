@@ -13,10 +13,9 @@ struct medico
     char nombre[25+1],apellido[25+1];
     int matricula, idEspecialidad,diasAtencion,horario,tiempoConsulta;
 };
-
-struct especialidades{
+struct especialidad{
     int id;
-    char descripcion[80+1];
+    char descripcion[20+1];
 };
 struct turno
 {
@@ -28,8 +27,25 @@ struct nodo{
     nodo *sgte;
     turno info;
 };
+
+int menu(int accion);
+void altaNuevoPaciente(FILE * &Pacientes);
+
 int main(){
+FILE *Pacientes;
+FILE *Medicos;
+especialidad especialidades[20];
 nodo *lista=NULL;
+int accion=0;
+
+while (accion!=8){
+menu(accion);
+if (accion=1)
+{
+altaNuevoPaciente(Pacientes);
+}
+
+}
 
     return 0;
 }
@@ -54,3 +70,18 @@ fseek(Pacientes,0,SEEK_END);
 fwrite(&nuevo,sizeof(paciente),1,Pacientes);
 fclose(Pacientes);
 }}
+int menu(int accion){
+cout<< "Por favor indique un numero del 1 al 8 indicando la que accion desea realizar: "<<endl;
+cout<<"1. Alta de nuevo paciente"<<endl;
+cout<<"2. Alta de nuevo turno"<<endl;
+cout<<"3. Alta de nuevo medico"<<endl;
+cout<<"4. Actualizacion de estado de turno"<<endl;
+cout<<"5. Listado de turnos pendientes"<<endl;
+cout<<"6. Listado de cantidad de atenciones efectivas"<<endl;
+cout<<"7. Listado de cancelaciones"<<endl;
+cout<<"8. Cerrar menu"<<endl;
+cin>>accion;
+if (accion>8||accion<1){
+    cout<<"numero invalido, por favor ingrese un numero valido: ";}
+    return accion;
+}
