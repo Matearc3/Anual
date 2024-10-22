@@ -85,3 +85,30 @@ if (accion>8||accion<1){
     cout<<"numero invalido, por favor ingrese un numero valido: ";}
     return accion;
 }
+void cargaEspecialidad(especialidad especialidades[]){
+int i;
+for (i=0; i < 20; i++)
+{
+    especialidades[i].id=i+1;
+}
+especialidades[0].descripcion[]= "Cardiologia";
+especialidades[1].descripcion[]="Dermatologia";
+especialidades[2].descripcion[]="Ginecologia";
+especialidades[3].descripcion[]="Pediatria";
+especialidades[4].descripcion[]="Neurologia";
+especialidades[5].descripcion[]="Oftalmologia";
+especialidades[6].descripcion[]="Oncologia";
+especialidades[7].descripcion[]="Ortopedia";
+especialidades[8].descripcion[]="Endocrinologia";
+especialidades[9].descripcion[]="Neumologia";
+especialidades[10].descripcion[]="Psiquiatria";
+especialidades[11].descripcion[]="Otorrinolaringologia";
+especialidades[12].descripcion[]="Gastroenterologia";
+especialidades[13].descripcion[]="Urologia";
+especialidades[14].descripcion[]="Nefrologia";
+especialidades[15].descripcion[]="Reumatologia";
+especialidades[16].descripcion[]="Cirugia General";
+especialidades[17].descripcion[]="Medicina Interna";
+especialidades[18].descripcion[]= "Traumatologia";
+especialidades[19].descripcion[]= "Infectologia";
+}
