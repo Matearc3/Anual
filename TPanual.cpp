@@ -32,6 +32,7 @@ struct nodo{
 void cargaEspecialidad(especialidad especialidades[]);
 int menu(int accion);
 void altaNuevoPaciente(FILE * &Pacientes);
+void altaNuevoMedico(FILE * &Medicos);
 
 int main(){
 FILE *Pacientes;
@@ -46,7 +47,13 @@ accion = menu(accion);
 if (accion=1)
 {
 altaNuevoPaciente(Pacientes);}
+if(accion=2){
 
+}
+if (accion=3)
+{
+    altaNuevoMedico(Medicos);
+}
 
 }
     return 0;
@@ -144,7 +151,7 @@ while (nuevo.horainicio<0||nuevo.horainicio>23)
 cout<<endl<<"Finaliza a las: ";cin>>nuevo.horafin;
 while (nuevo.horafin<0||nuevo.horafin>23||nuevo.horafin==nuevo.horainicio)
 {
-    cout<<endl<<"Hora de finalizacion invalida, por favor ingrese una hora valida: ";cin>>nuevo.horainicio;
+    cout<<endl<<"Hora de finalizacion invalida, por favor ingrese una hora valida: ";cin>>nuevo.horafin;
 }
 cout<<endl<<"ingrese tiempo de consultas (en minutos): ";cin>>nuevo.tiempoConsulta;
 cout<<endl<<"ingrese la cantidad de dias que atiende el medico: ";cin>>diasdeconsultas;
