@@ -18,14 +18,24 @@ struct especialidad{
     int id;
     char descripcion[20+1];
 };
-struct turno
+struct subturno
 {
-    int idMed,dia,mes,idPac;
+    int idTurno,dia,mes,idPac;
     float hora;
     char estatus;
 };
-struct nodo{
-    nodo *sgte;
+struct nodo1
+{
+    nodo1 *sgte;
+   subturno info;
+};
+struct turno
+{nodo1 infoSubTurno;
+int idMed;
+};
+
+struct nodo2{
+    nodo2 *sgte;
     turno info;
 };
 
@@ -39,7 +49,8 @@ FILE *Pacientes;
 FILE *Medicos;
 especialidad especialidades[20];
 cargaEspecialidad(especialidades);
-nodo *lista=NULL;
+nodo1 *sublista;
+nodo2 *turnos2024=NULL;//lista//
 int accion=0;
 
 while (accion!=8){
