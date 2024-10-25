@@ -53,17 +53,19 @@ nodo2 *Lista=NULL;//lista//
 int accion=0;
 
 while (accion!=8){
-accion = menu();
-if (accion==1)
-{
-altaNuevoPaciente(Pacientes);}
-if(accion==2){
+    accion = menu();
+    if (accion==1)
+    {
+        altaNuevoPaciente(Pacientes);
+    }
 
-}
-if (accion==3)
-{
-    altaNuevoMedico(Medicos);
-}
+    if(accion==2){
+
+    }
+    if (accion==3)
+    {
+        altaNuevoMedico(Medicos);
+    }
 
 }
     return 0;
@@ -89,6 +91,7 @@ fseek(Pacientes,0,SEEK_END);
 fwrite(&nuevo,sizeof(paciente),1,Pacientes);
 fclose(Pacientes);
 }}
+
 int menu(){
     int accion;
 cout<< "Por favor indique un numero del 1 al 8 indicando la que accion desea realizar: "<<endl;
@@ -106,6 +109,7 @@ if (accion>8||accion<1){
     }
   return accion;
 }
+
 void cargaEspecialidad(especialidad especialidades[]){
 int i;
 for (i=0; i < 20; i++)
@@ -133,6 +137,7 @@ strcpy(especialidades[0].descripcion, "Cardiologia");
     strcpy(especialidades[18].descripcion, "Traumatologia");
     strcpy(especialidades[19].descripcion, "Infectologia");
 }
+
 void altaNuevoMedico(FILE * &Medicos){
     int diasdeconsultas;
     int i;
@@ -185,8 +190,27 @@ for ( i = 0; i < diasdeconsultas; i++)
     fclose(Medicos);
     }
     }
+
 void altaNuevoTurno(FILE *&Pacientes, FILE* &Medicos,nodo2 &nodo){
 nodo2 *Aux;
 nodo2 *nuevo=new nodo2();
 
+}
+
+void actualizacionTurnos(nodo2 *lista, nodo2 &nodo,FILE *Pacientes, FILE* Medicos ){
+    nodo2 *aux=lista;
+    nodo2 actualizacion;
+    cout<<"ingrese el id de medico: ";
+    cin>>actualizacion.info.idMed;
+    while (actualizacion.info.idMed)
+    {
+        
+    }
+    
+    while (lista !=)
+    {
+        /* code */
+    }
+    
+    
 }
