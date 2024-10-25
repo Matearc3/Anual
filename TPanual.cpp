@@ -20,8 +20,7 @@ struct especialidad{
 };
 struct subturno
 {
-    int idTurno,dia,mes,idPac;
-    float hora;
+    int idTurno,dia,mes,idPac,hora[2];
     char estatus;
 };
 struct nodo1
