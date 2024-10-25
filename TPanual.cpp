@@ -49,8 +49,8 @@ FILE *Pacientes;
 FILE *Medicos;
 especialidad especialidades[20];
 cargaEspecialidad(especialidades);
-nodo1 *sublista;
-nodo2 *turnos2024=NULL;//lista//
+nodo2 *Lista=NULL;//lista//
+
 int accion=0;
 
 while (accion!=8){
@@ -186,3 +186,8 @@ for ( i = 0; i < diasdeconsultas; i++)
     fclose(Medicos);
     }
     }
+void altaNuevoTurno(FILE *&Pacientes, FILE* &Medicos,nodo2 &nodo){
+nodo2 *Aux;
+nodo2 *nuevo=new nodo2();
+
+}
