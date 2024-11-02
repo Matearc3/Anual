@@ -23,13 +23,13 @@ struct subturno
     int idTurno,dia,mes,idPac,hora[2];
     char estatus;
 };
-struct nodo1
+struct nodoT
 {
-    nodo1 *sgte;
+    nodoT *sgte;
    subturno info;
 };
 struct turno
-{nodo1 *infoSubTurno;
+{nodoT *sublista;
 int idMed;
 };
 
@@ -73,6 +73,28 @@ while (accion!=8){
     return 0;
 }
 
+//MENU
+int menu(){
+    int accion;
+    cout<< "Por favor indique un numero del 1 al 8 indicando la que accion desea realizar: "<<endl;
+    cout<<"1. Alta de nuevo paciente"<<endl;
+    cout<<"2. Alta de nuevo turno"<<endl;
+    cout<<"3. Alta de nuevo medico"<<endl;
+    cout<<"4. Actualizacion de estado de turno"<<endl;
+    cout<<"5. Listado de turnos pendientes"<<endl;
+    cout<<"6. Listado de cantidad de atenciones efectivas"<<endl;
+    cout<<"7. Listado de cancelaciones"<<endl;
+    cout<<"8. Cerrar menu"<<endl;
+    cin>>accion;
+    if (accion>8||accion<1)
+    {
+        cout<<"numero invalido, por favor ingrese un numero valido: ";
+    }
+
+    return accion;
+}
+
+//ALTAS
 void altaNuevoPaciente(FILE * &Pacientes){
     paciente nuevo;
     Pacientes=fopen("PACIENTES.BIN","rb+");
@@ -94,26 +116,6 @@ void altaNuevoPaciente(FILE * &Pacientes){
         fwrite(&nuevo,sizeof(paciente),1,Pacientes);
         fclose(Pacientes);
     }
-}
-
-int menu(){
-    int accion;
-    cout<< "Por favor indique un numero del 1 al 8 indicando la que accion desea realizar: "<<endl;
-    cout<<"1. Alta de nuevo paciente"<<endl;
-    cout<<"2. Alta de nuevo turno"<<endl;
-    cout<<"3. Alta de nuevo medico"<<endl;
-    cout<<"4. Actualizacion de estado de turno"<<endl;
-    cout<<"5. Listado de turnos pendientes"<<endl;
-    cout<<"6. Listado de cantidad de atenciones efectivas"<<endl;
-    cout<<"7. Listado de cancelaciones"<<endl;
-    cout<<"8. Cerrar menu"<<endl;
-    cin>>accion;
-    if (accion>8||accion<1)
-    {
-        cout<<"numero invalido, por favor ingrese un numero valido: ";
-    }
-
-    return accion;
 }
 
 void cargaEspecialidad(especialidad especialidades[]){
@@ -216,34 +218,69 @@ void altaNuevoTurno(FILE *&Pacientes, FILE* &Medicos,nodo2 &nodo){
 
 }
 
-void actualizacionTurnos(nodo2 *lista, nodo2 &nodo,FILE *Pacientes, FILE* Medicos ){
+//ACTUALIZACIONES
+void actualizacionTurnos(nodo2 *&lista,FILE *Pacientes, FILE* Medicos ){
     nodo2 *aux=lista;
-    nodo2 actualizacion;
+  
+    int IDmedico=0;
+    int IDturno=0;
     int ultimoID=0;
     medico m;
-
-    cout<<"ingrese el id de medico: ";
-    cin>>actualizacion.info.idMed;
     Medicos=fopen("MEDICOS.BIN","rb");
-
-    fseek(Medicos,-sizeof(medico),SEEK_END);
-    fread(&m,sizeof(medico),1,Medicos);
     
-    ultimoID=m.idMed;
-    while(actualizacion.info.idMed>ultimoID||actualizacion.info.idMed<0){
-        cout<<"El id es invalido, ingrese otro"<<endl;
-        cin>>actualizacion.info.idMed;
+    if (Medicos==NULL)
+    {
+    cout << "No se pudo abrir el archivo para lectura." << endl;
     }
 
-    while (actualizacion.info.idMed)
+    else
     {
-            
-    }
-    
-    while (lista !=)
-    {
-        /* code */
-    }
-    
-    
+        cout<<"ingrese el ID de medico: ";
+        cin>>IDmedico;
+
+        fseek(Medicos,-sizeof(medico),SEEK_END);
+        fread(&m,sizeof(medico),1,Medicos);
+        fclose(Medicos);
+
+        ultimoID=m.idMed;
+        
+        while (ultimoID<IDmedico && IDmedico<0)
+        {
+            cout<<endl<<"ID de medico invalido. Ingrese uno valido: ";
+            cin>>IDmedico;   
+        }
+
+        cout<<endl<<"ingrese el ID de turno: ";
+        cin>>IDturno;
+        
+        while (aux!=NULL && aux->info.idMed!=IDmedico)
+        {   
+            aux=aux->sgte;
+        }
+
+        if (aux->info.idMed==IDmedico)
+        {
+            while (aux->info.sublista!=NULL && aux->info.sublista->info.idTurno!=IDturno)
+            {
+                aux->info.sublista=aux->info.sublista->sgte;
+            }
+            if (aux->info.sublista->info.idTurno==IDturno)
+            {
+                cout<<endl<<"ingrese el estatus a colocar: ";
+                cin>>aux->info.sublista->info.estatus;
+            }
+
+            else
+            {
+                cout<<endl<< "No se encontro el turno.";
+                return;    
+            }
+
+        }
+        else
+        {
+            cout<<endl<< "No se encontro el turno.";
+            return;
+        }  
+    } 
 }
