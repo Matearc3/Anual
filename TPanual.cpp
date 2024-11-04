@@ -264,10 +264,18 @@ void actualizacionTurnos(nodo2 *&lista,FILE *Pacientes, FILE* Medicos ){
             {
                 aux->info.sublista=aux->info.sublista->sgte;
             }
+
             if (aux->info.sublista->info.idTurno==IDturno)
             {
                 cout<<endl<<"ingrese el estatus a colocar: ";
                 cin>>aux->info.sublista->info.estatus;
+
+                while (aux->info.sublista->info.estatus!='P'&& aux->info.sublista->info.estatus!='A' && aux->info.sublista->info.estatus!='C' && aux->info.sublista->info.estatus!='X')
+                {
+                    cout<<endl<<"Estatus invalido, por favor ingrese un estatus valido: ";
+                    cin>>aux->info.sublista->info.estatus;
+                }
+                    
             }
 
             else
