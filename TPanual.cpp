@@ -1,8 +1,8 @@
 #include <iostream>
-#include<stdio.h>
 #include<cstring>
 using namespace std;
 
+//ESTRUCTURAS
 struct paciente{
     int idPac; 
     char nombre[25+1], apellido[25+1];
@@ -32,45 +32,100 @@ struct turno
 {nodoT *sublista;
 int idMed;
 };
-
 struct nodo2{
     nodo2 *sgte;
     turno info;
 };
 
+//PROTOTIPOS
 void cargaEspecialidad(especialidad especialidades[]);
 int menu();
 void altaNuevoPaciente(FILE * &Pacientes);
 void altaNuevoMedico(FILE * &Medicos);
+void actualizacionTurnos(nodo2 *&lista, FILE* Medicos );
+void atencionesEfectivas(nodo2 *lista,FILE* Medicos);
 
+//MAIN
 int main(){
-FILE *Pacientes;
-FILE *Medicos;
-especialidad especialidades[20];
-cargaEspecialidad(especialidades);
-nodo2 *Lista=NULL;//lista//
+    FILE *Pacientes;
+    FILE *Medicos;
 
-int accion=0;
+    especialidad especialidades[20];
+    cargaEspecialidad(especialidades);
 
-while (accion!=8){
-    accion = menu();
-    if (accion==1)
+    nodo2 *Lista=NULL;//lista//
+
+    int accion=0;
+
+    while (accion!=8)
     {
-        altaNuevoPaciente(Pacientes);
+        accion = menu();
+        if (accion==1)
+        {
+            altaNuevoPaciente(Pacientes);
+        }
+
+        if(accion==2)
+        {
+
+        }
+
+        if (accion==3)
+        {
+            altaNuevoMedico(Medicos);
+        }
+
+        if (accion==4)
+        {
+            actualizacionTurnos(Lista,Medicos);
+        }
+
+        if (accion==5)
+        {
+            
+        }
+
+        if (accion==6)
+        {
+            atencionesEfectivas(Lista,Medicos);
+        }
+
+        if (accion==7)
+        {
+            /* code */
+        }   
     }
-
-    if(accion==2)
-    {
-
-    }
-
-    if (accion==3)
-    {
-        altaNuevoMedico(Medicos);
-    }
-
-}
     return 0;
+}
+
+//CARGA VECTOR ESPECIALIDADES
+void cargaEspecialidad(especialidad especialidades[]){
+    int i;
+    for (i=0; i < 20; i++)
+    {
+        especialidades[i].id=i+1;
+    }
+
+        strcpy(especialidades[0].descripcion, "Cardiologia");
+        strcpy(especialidades[1].descripcion, "Dermatologia");
+        strcpy(especialidades[2].descripcion, "Ginecologia");
+        strcpy(especialidades[3].descripcion, "Pediatria");
+        strcpy(especialidades[4].descripcion, "Neurologia");
+        strcpy(especialidades[5].descripcion, "Oftalmologia");
+        strcpy(especialidades[6].descripcion, "Oncologia");
+        strcpy(especialidades[7].descripcion, "Ortopedia");
+        strcpy(especialidades[8].descripcion, "Endocrinologia");
+        strcpy(especialidades[9].descripcion, "Neumologia");
+        strcpy(especialidades[10].descripcion, "Psiquiatria");
+        strcpy(especialidades[11].descripcion, "Otorrinolaringologia");
+        strcpy(especialidades[12].descripcion, "Gastroenterologia");
+        strcpy(especialidades[13].descripcion, "Urologia");
+        strcpy(especialidades[14].descripcion, "Nefrologia");
+        strcpy(especialidades[15].descripcion, "Reumatologia");
+        strcpy(especialidades[16].descripcion, "Cirugia General");
+        strcpy(especialidades[17].descripcion, "Medicina Interna");
+        strcpy(especialidades[18].descripcion, "Traumatologia");
+        strcpy(especialidades[19].descripcion, "Infectologia");
 }
 
 //MENU
@@ -116,35 +171,6 @@ void altaNuevoPaciente(FILE * &Pacientes){
         fwrite(&nuevo,sizeof(paciente),1,Pacientes);
         fclose(Pacientes);
     }
-}
-
-void cargaEspecialidad(especialidad especialidades[]){
-    int i;
-    for (i=0; i < 20; i++)
-    {
-        especialidades[i].id=i+1;
-    }
-
-        strcpy(especialidades[0].descripcion, "Cardiologia");
-        strcpy(especialidades[1].descripcion, "Dermatologia");
-        strcpy(especialidades[2].descripcion, "Ginecologia");
-        strcpy(especialidades[3].descripcion, "Pediatria");
-        strcpy(especialidades[4].descripcion, "Neurologia");
-        strcpy(especialidades[5].descripcion, "Oftalmologia");
-        strcpy(especialidades[6].descripcion, "Oncologia");
-        strcpy(especialidades[7].descripcion, "Ortopedia");
-        strcpy(especialidades[8].descripcion, "Endocrinologia");
-        strcpy(especialidades[9].descripcion, "Neumologia");
-        strcpy(especialidades[10].descripcion, "Psiquiatria");
-        strcpy(especialidades[11].descripcion, "Otorrinolaringologia");
-        strcpy(especialidades[12].descripcion, "Gastroenterologia");
-        strcpy(especialidades[13].descripcion, "Urologia");
-        strcpy(especialidades[14].descripcion, "Nefrologia");
-        strcpy(especialidades[15].descripcion, "Reumatologia");
-        strcpy(especialidades[16].descripcion, "Cirugia General");
-        strcpy(especialidades[17].descripcion, "Medicina Interna");
-        strcpy(especialidades[18].descripcion, "Traumatologia");
-        strcpy(especialidades[19].descripcion, "Infectologia");
 }
 
 void altaNuevoMedico(FILE * &Medicos){
@@ -212,14 +238,10 @@ void altaNuevoMedico(FILE * &Medicos){
     }        
 }
 
-void altaNuevoTurno(FILE *&Pacientes, FILE* &Medicos,nodo2 &nodo){
-    nodo2 *Aux;
-    nodo2 *nuevo=new nodo2();
 
-}
 
 //ACTUALIZACIONES
-void actualizacionTurnos(nodo2 *&lista,FILE *Pacientes, FILE* Medicos ){
+void actualizacionTurnos(nodo2 *&lista, FILE* Medicos ){
     nodo2 *aux=lista;
   
     int IDmedico=0;
@@ -292,3 +314,62 @@ void actualizacionTurnos(nodo2 *&lista,FILE *Pacientes, FILE* Medicos ){
         }  
     } 
 }
+
+//LISTADOS
+void atencionesEfectivas(nodo2 *lista,FILE* Medicos){
+    nodo2* aux=lista;
+    Medicos=fopen("MEDICOS.BIN","rb");
+    int mes;
+    int contador=0;
+    medico tamano;
+    
+    if (Medicos==NULL)
+    {
+    cout << "No se pudo abrir el archivo para lectura." << endl;
+    }
+    else
+    {
+        fseek(Medicos,-sizeof(medico),SEEK_END);
+        fread(&tamano,sizeof(medico),0,Medicos);
+        
+        medico meds[tamano.idMed];
+        fseek(Medicos,0,SEEK_SET);
+        
+        for (int i = 0; i < tamano.idMed; i++)
+        {
+            fread(&meds[i],sizeof(medico),1,Medicos);
+            
+        }
+
+        fclose(Medicos);
+        
+        cout<<"Ingrese de que mes desea reportar la cantidad de atenciones efectivas: ";
+        cin>>mes;
+        
+        while (mes>12||mes<1)
+        {
+            cout<<"Mes invalido, ingrese un mes valido: ";
+            cin>>mes;
+        }
+
+        while (aux!=NULL)
+        {
+            contador=0;
+            while (aux->info.sublista!=NULL)
+            {
+            
+            if(mes==aux->info.sublista->info.mes && aux->info.sublista->info.estatus=='A')
+            {    
+                contador++;
+            }  
+
+            aux->info.sublista=aux->info.sublista->sgte;
+            }
+            
+            cout<<"El doctor " <<meds[aux->info.idMed-1].nombre<<" tuvo "<< contador <<" atenciones efectivas en el mes "<<mes<<".";
+            
+            aux=aux->sgte;
+        }
+    }
+}
+
