@@ -184,8 +184,12 @@ void altaNuevoMedico(FILE * &Medicos){
     }
     else{
         fseek(Medicos,-sizeof(medico),SEEK_END);
+        
         fread(&nuevo,sizeof(medico),1,Medicos);
         nuevo.idMed++;
+        
+        fseek(Medicos,0,SEEK_END);
+
         for (int i = 0; i < 7; i++) {
             nuevo.diasAtencion[i] = 0;
         }
@@ -232,7 +236,7 @@ void altaNuevoMedico(FILE * &Medicos){
                 cin>>nuevo.diasAtencion[i];
             }
         }
-        fseek(Medicos,0,SEEK_END);
+        
         fwrite(&nuevo,sizeof(medico),1,Medicos);
         fclose(Medicos);
     }        
