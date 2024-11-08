@@ -40,6 +40,7 @@ struct nodo2{
 //PROTOTIPOS
 void cargaEspecialidad(especialidad especialidades[]);
 void cargaListaMed(FILE *Medicos,nodo2*&Lista);
+void cargaSublistas(nodo2*&Lista);
 int menu();
 void altaNuevoPaciente(FILE * &Pacientes);
 void altaNuevoMedico(FILE * &Medicos, nodo2*&Lista);
@@ -156,7 +157,7 @@ void cargaListaMed(FILE *Medicos,nodo2*&Lista)
         nuevo->sgte=NULL;
         if (Lista==NULL)
         {
-            Lista==nuevo;
+            Lista=nuevo;
         }
         else
         {
@@ -307,7 +308,7 @@ void altaNuevoMedico(FILE * &Medicos,nodo2*&Lista){
         while (aux->sgte!=NULL)
         {   
             
-            aux->sgte;
+            aux=aux->sgte;
         }
         aux->sgte=nuevoM;
         
@@ -330,19 +331,17 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
     int horaFinAux[2]={};
 
     int ultimoID;
-
-    int turno=listaTurnos->info.sublista->info.idTurno;
     
     Pacientes=fopen("PACIENTES.BIN","rb");
     Medicos=fopen("MEDICOS.BIN","rb");
 
-    if (Medicos==NULL||Pacientes==NULL)
+    if (Medicos==NULL ||Pacientes==NULL)
     {
-        cout << "No se pudo abrir el archivo para lectura." << endl;
+        cout << "No se pudieron abrir los archivos para lectura." << endl;
         return ;
     }
 
-    fseek(Pacientes,sizeof(paciente),SEEK_END);
+    fseek(Pacientes,-sizeof(paciente),SEEK_END);
     fread(&p,sizeof(paciente),1,Pacientes);
     fclose(Pacientes);
 
@@ -356,7 +355,7 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
         cin>>nuevoTurno->info.idPac;
     }
 
-    fseek(Medicos,sizeof(medico),SEEK_END);
+    fseek(Medicos,-sizeof(medico),SEEK_END);
     fread(&m,sizeof(medico),1,Medicos);
     
 
@@ -434,8 +433,17 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
         {
             diaAux-=7;
         }
+        int cantdias=0;
 
-        for (int i = 0; i < sizeof(m.diasAtencion); i++)
+        for (int i = 0; i < 7; i++)
+        {
+            if (m.diasAtencion[i]!=0)
+            {
+                cantdias++;
+            }
+        }
+        
+        for (int i = 0; i < cantdias; i++)
         {
             if(m.diasAtencion[i]==diaAux)
             {
@@ -606,7 +614,7 @@ void atencionesEfectivas(nodo2 *lista,FILE* Medicos){
     else
     {
         fseek(Medicos,-sizeof(medico),SEEK_END);
-        fread(&tamano,sizeof(medico),0,Medicos);
+        fread(&tamano,sizeof(medico),1,Medicos);
         
         medico meds[tamano.idMed];
         fseek(Medicos,0,SEEK_SET);
@@ -649,7 +657,7 @@ void atencionesEfectivas(nodo2 *lista,FILE* Medicos){
             aux->info.sublista=aux->info.sublista->sgte;
             }
             
-            cout<<"El doctor " <<meds[aux->info.idMed-1].nombre<<" tuvo "<< contador <<" atenciones efectivas en el mes "<<mes<<".";
+            cout<<"El Medico " <<meds[aux->info.idMed-1].nombre<<" tuvo "<< contador <<" atenciones efectivas en el mes "<<mes<<"."<<endl;
             
             aux=aux->sgte;
         }
@@ -668,7 +676,7 @@ void turnosPendientes(nodo2* lista,FILE* Medicos){
         return;
     }
 
-    fseek(Medicos, sizeof(medico),SEEK_END);
+    fseek(Medicos, -sizeof(medico),SEEK_END);
     fread(&auxMed,sizeof(medico),1,Medicos);
     
 
