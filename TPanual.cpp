@@ -39,6 +39,7 @@ struct nodo2{
 
 //PROTOTIPOS
 void cargaEspecialidad(especialidad especialidades[]);
+void cargaListaMed(FILE *Medicos,nodo2*&Lista);
 int menu();
 void altaNuevoPaciente(FILE * &Pacientes);
 void altaNuevoMedico(FILE * &Medicos, nodo2*&Lista);
@@ -56,7 +57,8 @@ int main(){
     especialidad especialidades[20];
     cargaEspecialidad(especialidades);
 
-    nodo2 *Lista=NULL;//lista//
+    nodo2 *Lista=NULL;
+    cargaListaMed(Medicos,Lista);
 
     int accion=0;
 
@@ -131,18 +133,61 @@ void cargaEspecialidad(especialidad especialidades[]){
         strcpy(especialidades[19].descripcion, "Infectologia");
 }
 
+
+//CARGA LISTA
+void cargaListaMed(FILE *Medicos,nodo2*&Lista)
+{
+    nodo2*aux;
+    medico auxMed;
+    Medicos=fopen("MEDICOS.BIN","rb");
+
+    if (Medicos==NULL)
+    {
+        cout<<"Error al abrir el archivo para lectura.";
+        return;
+    }
+    
+    fseek(Medicos,0,SEEK_SET);
+    while (fread(&auxMed,sizeof(medico),1,Medicos))
+    {
+        aux=Lista;
+        nodo2* nuevo=new nodo2();
+        nuevo->info.idMed=auxMed.idMed;
+        nuevo->sgte=NULL;
+        if (Lista==NULL)
+        {
+            Lista==nuevo;
+        }
+        else
+        {
+            while(aux->sgte!=NULL)
+            {
+                aux=aux->sgte;
+            }
+            aux->sgte=nuevo;
+        }
+    }
+    fclose(Medicos);
+}
+
+void cargaSublistas(nodo2*&Lista)
+{
+    nodo2* aux;
+    
+}
+
 //MENU
 int menu(){
     int accion;
     cout<< "Por favor indique un numero del 1 al 8 indicando la que accion desea realizar: "<<endl;
-    cout<<"1. Alta de nuevo paciente"<<endl;
-    cout<<"2. Alta de nuevo turno"<<endl;
-    cout<<"3. Alta de nuevo medico"<<endl;
-    cout<<"4. Actualizacion de estado de turno"<<endl;
-    cout<<"5. Listado de turnos pendientes"<<endl;
-    cout<<"6. Listado de cantidad de atenciones efectivas"<<endl;
-    cout<<"7. Listado de cancelaciones"<<endl;
-    cout<<"8. Cerrar menu"<<endl;
+    cout<<"1. Alta de nuevo paciente."<<endl;
+    cout<<"2. Alta de nuevo turno."<<endl;
+    cout<<"3. Alta de nuevo medico."<<endl;
+    cout<<"4. Actualizacion de estado de turno."<<endl;
+    cout<<"5. Listado de turnos pendientes para cierto medico en cierto mes."<<endl;
+    cout<<"6. Listado de cantidad de atenciones efectivas para un medico en cierto mes."<<endl;
+    cout<<"7. Listado de cancelaciones en cierto mes."<<endl;
+    cout<<"8. Cerrar menu."<<endl;
     cin>>accion;
     if (accion>8||accion<1)
     {
@@ -151,6 +196,7 @@ int menu(){
 
     return accion;
 }
+
 
 //ALTAS
 void altaNuevoPaciente(FILE * &Pacientes){
@@ -312,7 +358,7 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
 
     fseek(Medicos,sizeof(medico),SEEK_END);
     fread(&m,sizeof(medico),1,Medicos);
-    fclose(Medicos);
+    
 
     ultimoID=m.idMed;
     
@@ -328,6 +374,12 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
     fseek(Medicos,sizeof(medico)*idMed,SEEK_SET);
     fread(&m,sizeof(medico),1,Medicos);
     fclose(Medicos);
+
+    if (aux==NULL)
+    {
+        cout<<"ERROR. No hay medicos cargados en el sistema.";
+        return;
+    }
 
     while(aux->info.idMed != idMed)
     {
@@ -491,6 +543,13 @@ void actualizacionTurnos(nodo2 *&lista, FILE* Medicos ){
         cout<<endl<<"ingrese el ID de turno: ";
         cin>>IDturno;
         
+        if (aux==NULL)
+        {
+            cout<<"ERROR. No hay medicos cargados en el sistema.";
+            return;
+        }
+
+
         while (aux!=NULL && aux->info.idMed!=IDmedico)
         {   
             aux=aux->sgte;
@@ -531,6 +590,7 @@ void actualizacionTurnos(nodo2 *&lista, FILE* Medicos ){
     } 
 }
 
+
 //LISTADOS
 void atencionesEfectivas(nodo2 *lista,FILE* Medicos){
     nodo2* aux=lista;
@@ -567,6 +627,13 @@ void atencionesEfectivas(nodo2 *lista,FILE* Medicos){
             cout<<"Mes invalido, ingrese un mes valido: ";
             cin>>mes;
         }
+
+        if (aux==NULL)
+        {
+            cout<<"ERROR. No hay medicos cargados en el sistema.";
+            return;
+        }
+
 
         while (aux!=NULL)
         {
@@ -618,9 +685,16 @@ void turnosPendientes(nodo2* lista,FILE* Medicos){
 
     fclose(Medicos);
 
+    if (aux==NULL)
+    {
+        cout<<"ERROR. No hay medicos cargados en el sistema.";
+        return;
+    }
+
+
     cout<<"Ingrese mes: "<<endl;
     cin>>mes;
-    while (mes>12||mes<0)
+    while (mes>12||mes<1)
     {
         cout<<"Mes invalido, Ingrese el mes como un numero del uno al 12: "<<endl;
         cin>>mes;
@@ -681,15 +755,24 @@ void listarCancelaciones(nodo2 *listaTurnos, especialidad especialidades[], FILE
 
     cout<<"Ingrese mes: "<<endl;
     cin>>mes;
-    while (mes>12||mes<0)
+    while (mes>12||mes<1)
     {
         cout<<"Mes invalido, Ingrese el mes como un numero del uno al 12: "<<endl;
         cin>>mes;
     }
 
+    if (auxLista==NULL)
+    {
+        cout<<"ERROR. No hay medicos cargados en el sistema.";
+        fclose(Medicos);
+        fclose(Pacientes);
+        return;
+    }
+    
     cout << "\n--- CANCELACIONES DEL MES " << mes << " ---\n" << endl;
     cout << "PACIENTE\t\tMEDICO\t\tESPECIALIDAD\tDIA" << endl;
     cout << "------------------------------------------------------------------------" << endl;
+    
 
     while (auxLista != NULL) {
         // Inicializamos un puntero a la sublista de turnos
@@ -698,7 +781,7 @@ void listarCancelaciones(nodo2 *listaTurnos, especialidad especialidades[], FILE
         // Buscamos el médico correspondiente
         fseek(Medicos, sizeof(medico)*(auxLista->info.idMed),SEEK_SET);
         fread(&med, sizeof(medico), 1, Medicos);
-
+        
         // Recorremos la sublista de turnos
         while (auxTurnos != NULL) {
             // Verificamos si es una cancelación del mes solicitado
@@ -706,7 +789,7 @@ void listarCancelaciones(nodo2 *listaTurnos, especialidad especialidades[], FILE
                 // Buscamos el paciente
                 fseek(Pacientes, (auxTurnos->info.idPac - 1) * sizeof(paciente), SEEK_SET);
                 fread(&pac, sizeof(paciente), 1, Pacientes);
-
+                
                 // Imprimimos los datos
                 cout << pac.nombre << " " << pac.apellido << "\t";
                 cout << med.nombre << " " << med.apellido << "\t";
