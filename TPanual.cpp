@@ -41,6 +41,7 @@ struct nodo2{
 void cargaEspecialidad(especialidad especialidades[]);
 void cargaListaMed(FILE *Medicos,nodo2*&Lista);
 void cargaSublistas(nodo2*&Lista);
+void cargarTurnosAutomaticamente(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos);
 int menu();
 void altaNuevoPaciente(FILE * &Pacientes);
 void altaNuevoMedico(FILE * &Medicos, nodo2*&Lista);
@@ -60,6 +61,7 @@ int main(){
 
     nodo2 *Lista=NULL;
     cargaListaMed(Medicos,Lista);
+    cargarTurnosAutomaticamente(Pacientes,Medicos,Lista);
 
     int accion=0;
 
@@ -171,11 +173,94 @@ void cargaListaMed(FILE *Medicos,nodo2*&Lista)
     fclose(Medicos);
 }
 
-void cargaSublistas(nodo2*&Lista)
+void cargarTurnosAutomaticamente(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos) 
 {
-    nodo2* aux;
+    paciente p;
+    medico m;
+    int totalPacientes = 0, totalMedicos = 0;
+    int numTurnos =12;
+
+
+    Pacientes = fopen("PACIENTES.BIN", "rb");
+    Medicos = fopen("MEDICOS.BIN", "rb");
+
+    if (Medicos == NULL || Pacientes == NULL) 
+    {
+        cout << "No se pudieron abrir los archivos para lectura." << endl;
+        return;
+    }
+
+    fseek(Pacientes, -sizeof(paciente), SEEK_END);
+    fread(&p,sizeof(paciente),1,Pacientes);
+    totalPacientes=p.idPac;
+
+    fseek(Medicos, -sizeof(medico), SEEK_END);
+    fread(&m,sizeof(medico),1,Medicos);
+    totalMedicos=m.idMed;    
+
     
+    for (int i = 0; i < numTurnos; i++) {
+        nodoT* nuevoTurno = new nodoT();
+        nuevoTurno->sgte = NULL;
+
+      
+        if (i % 3 == 0) {
+            nuevoTurno->info.estatus = 'P';  
+        } else if (i % 3 == 1) {
+            nuevoTurno->info.estatus = 'A';  
+        } else {
+            nuevoTurno->info.estatus = 'C'; 
+        }
+
+        
+        int pacienteID = ( i % totalPacientes ) + 1;
+        fseek(Pacientes,  sizeof(paciente)* (pacienteID) , SEEK_SET);
+        fread(&p, sizeof(paciente), 1, Pacientes);
+        nuevoTurno->info.idPac = p.idPac;
+
+        
+        int medicoID = ( i % totalMedicos ) + 1;
+        fseek(Medicos, sizeof(medico)* (medicoID), SEEK_SET);
+        fread(&m, sizeof(medico), 1, Medicos);
+
+        int diaLaboral = 1;
+        for (int j = 0; j < 7; j++) {
+            if (m.diasAtencion[j] != 0) {
+                diaLaboral = m.diasAtencion[j];
+                j=7;
+            }
+        }
+        nuevoTurno->info.dia = diaLaboral;
+        nuevoTurno->info.mes = 1; 
+
+
+        nuevoTurno->info.hora[0] = m.horainicio; 
+        nuevoTurno->info.hora[1] = 0; 
+
+       
+        nodo2* auxMedico = listaTurnos;
+        while (auxMedico != NULL && auxMedico->info.idMed != m.idMed) {
+            auxMedico = auxMedico->sgte;
+        }
+
+        if (auxMedico != NULL) {
+            nodoT* auxTurno = auxMedico->info.sublista;
+            while (auxTurno != NULL && auxTurno->sgte != NULL) {
+                auxTurno = auxTurno->sgte;
+            }
+
+            if (auxTurno == NULL) {
+                auxMedico->info.sublista = nuevoTurno;
+            } else {
+                auxTurno->sgte = nuevoTurno;
+            }
+        }
+    }
+
+    fclose(Pacientes);
+    fclose(Medicos);
 }
+
 
 //MENU
 int menu(){
@@ -209,6 +294,15 @@ void altaNuevoPaciente(FILE * &Pacientes){
     }
     else
     {
+        int ingresar=0;
+        cout<<"Desea ingresar un paciente nuevo al sistema? Ingrese 0 para no o cualquier otro digito para si."<<endl;
+        cin>>ingresar;
+        if (ingresar==0)
+        {   
+            fclose(Pacientes);
+            return;
+        }
+        
         fseek(Pacientes,-sizeof(paciente),SEEK_END);
         fread(&nuevo,sizeof (paciente),1,Pacientes);
         nuevo.idPac++;
@@ -238,6 +332,15 @@ void altaNuevoMedico(FILE * &Medicos,nodo2*&Lista){
     }
     else
     {
+        int ingresar=0;
+        cout<<"Desea ingresar un Medico nuevo al sistema? Ingrese 0 para no o cualquier otro digito para si."<<endl;
+        cin>>ingresar;
+        if (ingresar==0)
+        {   
+            fclose(Medicos);
+            return;
+        } 
+
         fseek(Medicos,-sizeof(medico),SEEK_END);
         
         fread(&nuevo,sizeof(medico),1,Medicos);
@@ -345,6 +448,14 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
     fread(&p,sizeof(paciente),1,Pacientes);
     fclose(Pacientes);
 
+    int ingresar=0;
+    cout<<"Desea ingresar un Turno nuevo al sistema? Ingrese 0 para no o cualquier otro digito para si."<<endl;
+    cin>>ingresar;
+    if (ingresar==0)
+    {   
+        fclose(Medicos);
+        return;
+    } 
     ultimoID=p.idPac;
     cout<<"Ingrese id Paciente: "<<endl;
     cin>>nuevoTurno->info.idPac;
@@ -386,17 +497,19 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
 	}
 
     nodoT *sublistAux=aux->info.sublista;
-
-    while(sublistAux->sgte!=NULL && sublistAux->sgte->info.idPac!=nuevoTurno->info.idPac)
+    if (sublistAux!=NULL)
     {
-		  sublistAux=sublistAux->sgte;
-	}
+        while(sublistAux->sgte!=NULL && sublistAux->sgte->info.idPac!=nuevoTurno->info.idPac)
+        {
+            sublistAux=sublistAux->sgte;
+        }
 
-    if(aux->info.sublista->info.idPac==nuevoTurno->info.idPac)
-    {
-		cout<<"Ya hay turno de este paciente con este medico"<<endl;
-    	return;
-	}
+        if(aux->info.sublista->info.idPac==nuevoTurno->info.idPac)
+        {
+            cout<<"Ya hay turno de este paciente con este medico"<<endl;
+            return;
+        }
+    }
 
     else
     {
@@ -495,6 +608,12 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
                     horaFinAux[1]%=60;
                 }
 
+                if (nuevoTurno->info.hora==horaInicioAux)
+                {
+                    cout<<"El medico ya tiene un turno en ese dia y hora"<<endl;
+                }
+                
+
                 if ((horaInicio[0] < horaFinAux[0] || (horaInicio[0] == horaFinAux[0] && horaInicio[1] < horaFinAux[1])) && (horaFin[0] > horaInicioAux[0] || (horaFin[0] == horaInicioAux[0] && horaFin[1] > horaInicioAux[1])))
                 {
                     cout << "El medico ya tiene un turno en esta franja horaria." << endl;
@@ -504,13 +623,23 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
             }
             sublistAux=sublistAux->sgte;
         }
-        while (aux->info.sublista->sgte!=NULL)
+        sublistAux=aux->info.sublista;
+        if (sublistAux==NULL)
         {
-            aux->info.sublista=aux->info.sublista->sgte;
+            nuevoTurno->info.estatus='P';
+            nuevoTurno->info.idTurno=aux->info.sublista->info.idTurno+1;
+            sublistAux=nuevoTurno;
+            cout<<"Turno ingresado correctamente."<<endl;
+            return;
+        }
+        
+        while (sublistAux->sgte!=NULL)
+        {
+            sublistAux=sublistAux->sgte;
         }
         nuevoTurno->info.estatus='P';
         nuevoTurno->info.idTurno=aux->info.sublista->info.idTurno+1;
-        aux->info.sublista->sgte=nuevoTurno;
+        sublistAux->sgte=nuevoTurno;
     }
         
 }
@@ -533,12 +662,23 @@ void actualizacionTurnos(nodo2 *&lista, FILE* Medicos ){
 
     else
     {
+        int ingresar=0;
+        cout<<"Desea actualizar el estado de un turno existente? Ingrese 0 para no o cualquier otro digito para si."<<endl;
+        cin>>ingresar;
+        if (ingresar==0)
+        {   
+            fclose(Medicos);
+            return;
+        } 
+
         cout<<"ingrese el ID de medico: ";
         cin>>IDmedico;
 
         fseek(Medicos,-sizeof(medico),SEEK_END);
         fread(&m,sizeof(medico),1,Medicos);
         fclose(Medicos);
+
+        
 
         ultimoID=m.idMed;
         
@@ -645,16 +785,17 @@ void atencionesEfectivas(nodo2 *lista,FILE* Medicos){
 
         while (aux!=NULL)
         {
+            nodoT* auxSub=aux->info.sublista;
             contador=0;
-            while (aux->info.sublista!=NULL)
+            while (auxSub!=NULL)
             {
             
-            if(mes==aux->info.sublista->info.mes && aux->info.sublista->info.estatus=='A')
+            if(mes==auxSub->info.mes && auxSub->info.estatus=='A')
             {    
                 contador++;
             }  
 
-            aux->info.sublista=aux->info.sublista->sgte;
+            auxSub=auxSub->sgte;
             }
             
             cout<<"El Medico " <<meds[aux->info.idMed-1].nombre<<" tuvo "<< contador <<" atenciones efectivas en el mes "<<mes<<"."<<endl;
@@ -721,23 +862,23 @@ void turnosPendientes(nodo2* lista,FILE* Medicos){
     bool hayTurno=false;
     int contador=1;
     cout<<"Turnos pendientes del medico "<< auxMed.nombre<<" "<<auxMed.apellido<<" en el mes "<<mes<<": "<<endl;
-
-    while (aux->info.sublista!=NULL)
+    nodoT* auxSub=aux->info.sublista;
+    while (auxSub!=NULL)
     {   
-        if (mes==aux->info.sublista->info.mes&&aux->info.sublista->info.estatus=='P')
+        if (mes==auxSub->info.mes && auxSub->info.estatus=='P')
         {
             hayTurno=true;
             cout<<endl;
             cout<<"Turno numero: "<<contador<<endl;
-            cout<<"ID del turno: "<<aux->info.sublista->info.idTurno<<endl;
-            cout<<"ID del paciente: "<<aux->info.sublista->info.idPac<<endl;
-            cout<<"Dia del turno: "<<aux->info.sublista->info.dia<<endl;
-            cout<<"Horario: "<<aux->info.sublista->info.hora<<endl;
+            cout<<"ID del turno: "<<auxSub->info.idTurno<<endl;
+            cout<<"ID del paciente: "<<auxSub->info.idPac<<endl;
+            cout<<"Dia del turno: "<<auxSub->info.dia<<endl;
+            cout<<"Horario: "<<auxSub->info.hora[0]<<":"<<auxSub->info.hora[1]<<endl;
             contador++;
             
         }
         
-        aux->info.sublista=aux->info.sublista->sgte;
+        auxSub=auxSub->sgte;
     }
     if (hayTurno==false)
     {
@@ -783,31 +924,31 @@ void listarCancelaciones(nodo2 *listaTurnos, especialidad especialidades[], FILE
     
 
     while (auxLista != NULL) {
-        // Inicializamos un puntero a la sublista de turnos
+       
         nodoT* auxTurnos = auxLista->info.sublista;
 
-        // Buscamos el médico correspondiente
+        
         fseek(Medicos, sizeof(medico)*(auxLista->info.idMed),SEEK_SET);
         fread(&med, sizeof(medico), 1, Medicos);
         
-        // Recorremos la sublista de turnos
+        
         while (auxTurnos != NULL) {
-            // Verificamos si es una cancelación del mes solicitado
+            
             if (auxTurnos->info.mes == mes && auxTurnos->info.estatus == 'C') {
-                // Buscamos el paciente
+                
                 fseek(Pacientes, (auxTurnos->info.idPac - 1) * sizeof(paciente), SEEK_SET);
                 fread(&pac, sizeof(paciente), 1, Pacientes);
                 
-                // Imprimimos los datos
+                
                 cout << pac.nombre << " " << pac.apellido << "\t";
                 cout << med.nombre << " " << med.apellido << "\t";
                 cout << especialidades[med.idEspecialidad - 1].descripcion << "\t";
                 cout << "Dia " << auxTurnos->info.dia << endl;
             }
-            // Avanzamos al siguiente turno
+            
             auxTurnos = auxTurnos->sgte;
         }
-        // Avanzamos a la siguiente lista de turnos
+        
         auxLista = auxLista->sgte;
     }
 
