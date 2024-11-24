@@ -214,13 +214,13 @@ void cargarTurnosAutomaticamente(FILE* Pacientes, FILE* Medicos, nodo2* &listaTu
 
         
         int pacienteID = ( i % totalPacientes ) + 1;
-        fseek(Pacientes,  sizeof(paciente)* (pacienteID) , SEEK_SET);
+        fseek(Pacientes,  sizeof(paciente)* ((pacienteID)-1) , SEEK_SET);
         fread(&p, sizeof(paciente), 1, Pacientes);
         nuevoTurno->info.idPac = p.idPac;
 
         
         int medicoID = ( i % totalMedicos ) + 1;
-        fseek(Medicos, sizeof(medico)* (medicoID), SEEK_SET);
+        fseek(Medicos, sizeof(medico)* ((medicoID)-1), SEEK_SET);
         fread(&m, sizeof(medico), 1, Medicos);
 
         int diaLaboral = 1;
@@ -481,7 +481,7 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
         cin>>idMed;
     }
     
-    fseek(Medicos,sizeof(medico)*idMed,SEEK_SET);
+    fseek(Medicos,sizeof(medico)*(idMed-1),SEEK_SET);
     fread(&m,sizeof(medico),1,Medicos);
     fclose(Medicos);
 
@@ -888,7 +888,8 @@ void turnosPendientes(nodo2* lista,FILE* Medicos){
 
 }
 
-void listarCancelaciones(nodo2 *listaTurnos, especialidad especialidades[], FILE* Medicos,FILE* Pacientes) {
+void listarCancelaciones(nodo2 *listaTurnos, especialidad especialidades[], FILE* Medicos,FILE* Pacientes) 
+{
     int mes=0;
     Medicos = fopen("MEDICOS.BIN", "rb");
     Pacientes = fopen("PACIENTES.BIN", "rb");
