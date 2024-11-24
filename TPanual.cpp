@@ -314,6 +314,8 @@ void altaNuevoPaciente(FILE * &Pacientes){
         fseek(Pacientes,0,SEEK_END);
         fwrite(&nuevo,sizeof(paciente),1,Pacientes);
         fclose(Pacientes);
+        cout<<"El paciente a sido agregado con exito."<<endl;
+        cout<<"El id del paciente es de: "<<nuevo.idPac<<endl;
     }
 }
 
@@ -414,7 +416,8 @@ void altaNuevoMedico(FILE * &Medicos,nodo2*&Lista){
             aux=aux->sgte;
         }
         aux->sgte=nuevoM;
-        
+        cout<<"El medico fue agregado con exito."<<endl;
+        cout<<"El id del medico es: "<<nuevo.idMed<<endl;
     }       
      
 }
@@ -640,6 +643,8 @@ void altaNuevoTurno(FILE* Pacientes, FILE* Medicos, nodo2* &listaTurnos)
         nuevoTurno->info.estatus='P';
         nuevoTurno->info.idTurno=aux->info.sublista->info.idTurno+1;
         sublistAux->sgte=nuevoTurno;
+        cout<<"El turno fue agregado con exito."<<endl;
+        cout<<"El id del turno es: "<<nuevoTurno->info.idTurno<<endl;
     }
         
 }
@@ -704,21 +709,22 @@ void actualizacionTurnos(nodo2 *&lista, FILE* Medicos ){
         }
 
         if (aux->info.idMed==IDmedico)
-        {
-            while (aux->info.sublista!=NULL && aux->info.sublista->info.idTurno!=IDturno)
-            {
-                aux->info.sublista=aux->info.sublista->sgte;
+        {   
+            nodoT* subaux=aux->info.sublista;
+            while (subaux!=NULL && subaux->info.idTurno!=IDturno)
+            {   
+                subaux=subaux->sgte;
             }
 
-            if (aux->info.sublista->info.idTurno==IDturno)
+            if (subaux->info.idTurno==IDturno)
             {
                 cout<<endl<<"ingrese el estatus a colocar: ";
                 cin>>aux->info.sublista->info.estatus;
 
-                while (aux->info.sublista->info.estatus!='P'&& aux->info.sublista->info.estatus!='A' && aux->info.sublista->info.estatus!='C' && aux->info.sublista->info.estatus!='X')
+                while (subaux->info.estatus!='P'&& subaux->info.estatus!='A' && subaux->info.estatus!='C' && subaux->info.estatus!='X')
                 {
                     cout<<endl<<"Estatus invalido, por favor ingrese un estatus valido: ";
-                    cin>>aux->info.sublista->info.estatus;
+                    cin>>subaux->info.estatus;
                 }
                     
             }
